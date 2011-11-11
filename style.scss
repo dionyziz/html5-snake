@@ -1,0 +1,67 @@
+#templates {
+  display: none;
+}
+
+a {
+  text-decoration: none;
+  color: #1972BF;
+}
+
+body {
+  font-family: 'Ubuntu', verdana;
+} 
+
+#content {
+  width: 800px;
+  margin: 0 auto;
+
+  h1.title {
+    text-align: center;
+    font-weight: normal;
+  }
+
+  #game {
+    width: 800px;
+    border: 3px solid black;
+    #hud {
+      height: 60px;
+      width: 800px;
+      border-bottom: 1px solid black;
+      font-size: 38px;
+      line-height: 60px;
+      
+      span#score-label {
+        padding-left: 10px;
+      }
+
+      #lost-text {
+        font-size: 20px;
+        line-height: 20px;
+        width: 100%;
+        text-align: center;
+      }
+
+      button#restart {
+        display: block;
+        margin: 0 auto;
+        margin-top: 5px;
+        font-size: 20px;
+        height: 30px;
+        width: 200px;
+        border-radius: 15px;
+        background-color: #C7EBED;
+        border-color: #4B5859;
+
+      }
+
+    }
+  }
+
+  #about {
+    font-size: 20px;
+  }
+}
+
+
+
+
