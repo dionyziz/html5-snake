@@ -66,7 +66,6 @@ class Snake
 
     @tail.pop() unless @increaseLength
     @tail.unshift(head)
-    
     @key = null
     @increaseLength = false
 
@@ -86,7 +85,6 @@ class SnakeGame
     @lost = true
     @redrawHud = true
     @score = 0
-
     @cols = @width/@sprite_size
     @rows = @height/@sprite_size
     @food =
@@ -102,7 +100,6 @@ class SnakeGame
     @lost = false
     @redrawHud = true
     @score = 0
-
     @then = Date.now()
     @snake = new Snake(this, 5, 5)
     addEventListener("keydown", @keyDown)
@@ -118,7 +115,6 @@ class SnakeGame
     @draw()
     
     @then = now
-
     setTimeout(@gameLoop, 1000/@fps) unless @lost
     # @start() if @lost 
     return true
@@ -160,10 +156,8 @@ class SnakeGame
 
   draw: =>
     @canvas.clearRect(0, 0, @width, @height)
-    
-    @drawHud() if @redrawHud
-    
 
+    @drawHud() if @redrawHud
 
     #draw the food
     @canvas.beginPath()
@@ -171,8 +165,4 @@ class SnakeGame
     @canvas.fillStyle = "#FF390D"
     @canvas.fill()
 
-
     @snake.draw(@canvas, @delta)
-
-     
-  
