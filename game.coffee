@@ -16,7 +16,7 @@ class Snake
     @alive = true
     @key = null 
     @tail = new Array
-    @increaseLength = false
+    @increaseLengthBy = 0
     
     @tail.push
       x: @x
@@ -37,7 +37,7 @@ class Snake
     @key = "RIGHT" if e.keyCode == 39
 
   eat: =>
-    @increaseLength = true #Causes the next update() to not remove the last element of @tail, thus increasing the length
+    @increaseLengthBy+=2 #Causes the next update() to not remove the last element of @tail, thus increasing the length
 
   update: (delta) =>
     opposite = false
@@ -64,10 +64,10 @@ class Snake
       if t.x == head.x and t.y == head.y
         @alive = false
 
-    @tail.pop() unless @increaseLength
+    @tail.pop() if @increaseLengthBy ==0
     @tail.unshift(head)
     @key = null
-    @increaseLength = false
+    @increaseLengthBy-- if @increaseLengthBy > 0
 
     true
 
