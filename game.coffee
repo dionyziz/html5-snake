@@ -37,7 +37,7 @@ class Snake
     @key = "RIGHT" if e.keyCode == 39
 
   eat: =>
-    @increaseLengthBy+=2 #Causes the next update() to not remove the last element of @tail, thus increasing the length
+    @increaseLengthBy += 5 #Causes the next update() to not remove the last element of @tail, thus increasing the length
 
   update: (delta) =>
     opposite = false
