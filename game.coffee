@@ -1,7 +1,3 @@
-$( ->
-  startGame()
-)
-
 startGame = ->
   console.log "Starting..."
   
@@ -11,37 +7,29 @@ startGame = ->
   game = new SnakeGame(canvas, $("#game #hud"), 800, 400, 10, 10)
   game.start()
 
+$ startGame
+
 class Snake
   constructor: (@game, @x, @y, @direction = "RIGHT")->
     @alive = true
     @key = null 
-    @tail = new Array
     @increaseLengthBy = 0
     
-    @tail.push
-      x: @x
-      y: @y
-    @tail.push
-      x: @x-1
-      y: @y
-    @tail.push
-      x: @x-2
-      y: @y
+    @tail = [ { x: @x, y: @y }
+              { x: @x-1, y: @y }
+              { x: @x-2, y: @y } ]
 
     true
 
   keyDown: (e) ->
-    @key = "UP" if e.keyCode == 38
-    @key = "DOWN" if e.keyCode == 40
-    @key = "LEFT" if e.keyCode == 37
-    @key = "RIGHT" if e.keyCode == 39
+    keys = { 38: "UP", 40: "DOWN", 37: "LEFT", 39: "RIGHT" }
+    @key = keys[ e.keyCode ] if keys[ e.keyCode ]?
 
   eat: =>
     @increaseLengthBy += 5 #Causes the next update() to not remove the last element of @tail, thus increasing the length
 
   update: (delta) =>
-    opposite = false
-    opposite = true if (@key == "UP" and @direction == "DOWN") or (@key == "DOWN" and @direction == "UP") or (@key == "LEFT" and @direction == "RIGHT") or (@key == "RIGHT" and @direction == "LEFT")
+    opposite = (@key == "UP" and @direction == "DOWN") or (@key == "DOWN" and @direction == "UP") or (@key == "LEFT" and @direction == "RIGHT") or (@key == "RIGHT" and @direction == "LEFT")
 
     @direction = @key if @key != null and (!opposite)
 
@@ -64,7 +52,7 @@ class Snake
       if t.x == head.x and t.y == head.y
         @alive = false
 
-    @tail.pop() if @increaseLengthBy ==0
+    @tail.pop() if @increaseLengthBy == 0
     @tail.unshift(head)
     @key = null
     @increaseLengthBy-- if @increaseLengthBy > 0
@@ -91,8 +79,6 @@ class SnakeGame
       x: Math.ceil(Math.random() * @cols) - 1
       y: Math.ceil(Math.random() * @rows) - 1
 
-
-
   start: =>
     return false unless @lost
     console.log "Game starting! Size is #{@width}-#{@height}"
@@ -102,10 +88,10 @@ class SnakeGame
     @score = 0
     @then = Date.now()
     @snake = new Snake(this, 5, 5)
-    addEventListener("keydown", @keyDown)
+    addEventListener "keydown", @keyDown
     
     @gameLoop()
-    return true
+    true
 
   gameLoop: =>
     now = Date.now()
@@ -115,25 +101,29 @@ class SnakeGame
     @draw()
     
     @then = now
-    setTimeout(@gameLoop, 1000/@fps) unless @lost
+    setTimeout @gameLoop, 1000/@fps unless @lost
     # @start() if @lost 
-    return true
+    true
   
   keyDown: (e) =>
-    @snake.keyDown(e)
+    @snake.keyDown e
 
   drawHud: =>
     unless @lost
-      @hud.html _.template($("#templates #hud #playing").html(),
-        score: @score
-      )
+      @hud.html _.template ($ "#templates #hud #playing").html(), score: @score
     else
-      @hud.html _.template($("#templates #hud #lost").html(),
-        score: @score
-      )
-      $("button#restart").click(@start)
+      @hud.html _.template ($ "#templates #hud #lost").html(), score: @score
+      ($ "button#restart").click @start
 
     @redrawHud = false
+
+  spawnFood: =>
+    @food =
+      x: Math.ceil(Math.random() * @cols) - 1
+      y: Math.ceil(Math.random() * @rows) - 1
+    for t in @snake.tail
+      if @food.x == t.x and @food.y == t.y
+        return @spawnFood()
   
   update: =>
     if not @snake.alive
@@ -144,25 +134,23 @@ class SnakeGame
     @snake.update(@delta)
 
     if @snake.x == @food.x and @snake.y == @food.y
-      @food =
-        x: Math.ceil(Math.random() * @cols) - 1
-        y: Math.ceil(Math.random() * @rows) - 1
       @snake.eat()
+      @spawnFood()
 
       @score++
       @redrawHud = true
     
-    return true
+    true
 
   draw: =>
-    @canvas.clearRect(0, 0, @width, @height)
+    @canvas.clearRect 0, 0, @width, @height
 
     @drawHud() if @redrawHud
 
     #draw the food
     @canvas.beginPath()
-    @canvas.arc((@food.x * @sprite_size) + (@sprite_size/2), (@food.y * @sprite_size) + (@sprite_size/2), (@sprite_size/2), 0, 2 * Math.PI, false)
+    @canvas.arc (@food.x + 1/2) * @sprite_size, (@food.y + 1/2) * @sprite_size, (@sprite_size/2), 0, 2 * Math.PI, false
     @canvas.fillStyle = "#FF390D"
     @canvas.fill()
 
-    @snake.draw(@canvas, @delta)
+    @snake.draw @canvas, @delta
